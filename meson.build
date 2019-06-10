@@ -175,6 +175,4 @@ if get_option('with_doc')
 		run_command('cp', inf, outfiles[i])
 		i += 1
 	endforeach
-
-	error ('@0@'.format(i))
 endif
