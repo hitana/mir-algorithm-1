@@ -142,66 +142,39 @@ if get_option('with_doc')
 		i += 1
 	endforeach
 
-	run_command('/bin/mkdir', 'web')
-	run_command('/bin/mkdir', 'web/images')
-	run_command('/bin/mkdir', 'web/css')
-	run_command('/bin/mkdir', 'web/js')
-
 	# Setup all other resources needed by dlang.org
-	# check whether we have all the exceptions
-	exceptions = ['doc/artwork/logo/mir_site_logo.svg', 'doc/run_examples_custom.js', 'doc/custom.css']
-	foreach e : exceptions
-		if (run_command('[', '-f', e, ']').returncode() != 0)
-			error('File ' + e + ' not found')
-			break
-		endif
-	endforeach
-
-	# copy images
-	all_img_files = [exceptions[0], 'doc/dlang.org/favicon.ico']
-	outfiles = ['mir.svg', 'favicon.ico']
-	args = [[cp, '@INPUT@', web_dir + '/images/' + '@OUTPUT@'], [cp, '@INPUT@', web_dir + '/' + '@OUTPUT@']]
+	infiles = ['doc/artwork/logo/mir_site_logo.svg', # images
+			   'doc/dlang.org/favicon.ico',
+			   'doc/dlang.org/css/style.css', # styles
+			   'doc/dlang.org/css/print.css', 
+			   'doc/custom.css', 
+			   'doc/dlang.org/css/codemirror.css',
+			   'doc/dlang.org/js/codemirror-compressed.js',   # js
+			   'doc/dlang.org/js/dlang.js', 
+			   'doc/dlang.org/js/ddox.js', 
+			   'doc/dlang.org/js/listanchors.js', 
+			   'doc/dlang.org/js/run.js', 
+			   'doc/run_examples_custom.js', 
+			   'doc/dlang.org/js/jquery-1.7.2.min.js']
+	outfiles = ['web/images/mir.svg', 
+				'web/favicon.ico', 
+				'web/css/style.css', 
+				'web/css/print.css', 
+				'web/css/custom.css', 
+				'web/css/codemirror.css',
+				'web/js/codemirror-compressed.js', 
+				'web/js/dlang.js', 
+				'web/js/ddox.js', 
+				'web/js/listanchors.js', 
+				'web/js/run.js', 
+				'web/js/run_examples.js', 
+				'web/js/jquery-1.7.2.min.js']
+	run_command('mkdir', 'web', 'web/images', 'web/css', 'web/js')
 	i = 0
-	foreach f : all_img_files
-		custom_target('target_img_' + '@0@'.format(i),
-				input : files(f),
-				output : outfiles[i],
-				command: args[i])
+	foreach inf : infiles
+		run_command('cp', inf, outfiles[i])
 		i += 1
 	endforeach
 
-	# copy styles
-	all_css_files = ['doc/dlang.org/css/style.css', 'doc/dlang.org/css/print.css', exceptions[2], 'doc/dlang.org/css/codemirror.css']
-	outfiles = ['style.css', 'print.css', 'custom.css', 'codemirror.css']
-	args = [cp, '@INPUT@', web_dir + '/css/' + '@OUTPUT@']
-
-	i = 0
-	foreach f : all_css_files
-		custom_target('target_css_' + '@0@'.format(i),
-				input : files(f),
-				output : outfiles[i],
-				command: args)
-		i += 1
-	endforeach
-
-	# copy js
-	all_js_files = ['doc/dlang.org/js/codemirror-compressed.js', 
-	'doc/dlang.org/js/dlang.js', 
-	'doc/dlang.org/js/ddox.js', 
-	'doc/dlang.org/js/listanchors.js', 
-	'doc/dlang.org/js/run.js', 
-	exceptions[1], 
-	'doc/dlang.org/js/jquery-1.7.2.min.js']
-	outfiles = ['codemirror-compressed.js', 'dlang.js', 'ddox.js', 'listanchors.js', 'run.js', 'run_examples.js', 'jquery-1.7.2.min.js']
-	args = [cp, '@INPUT@', doc_output_dir + '/js/' + '@OUTPUT@']
-
-	i = 0
-	foreach f : all_js_files
-		custom_target('target_js_' + '@0@'.format(i),
-				input : files(f),
-				output : outfiles[i],
-				command: args)
-		i += 1
-	endforeach
-
+	error ('@0@'.format(i))
 endif
