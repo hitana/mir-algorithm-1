@@ -107,38 +107,30 @@ endif
 
 if get_option('with_doc')
 
-	web_dir = '../web'
-	dmd = find_program('dmd')
-	cp = find_program('cp')
-
 	# D file to html, e.g. mir/combinatorics -> mir_combinatorics.html
 	# But "package.d" is special cased: std/range/package.d -> std_range.html
-	htmls = ['index.html']
+	htmls = ['web/index.html']
 	foreach f : mir_algorithm_src									# warning : mir_algorithm_src provides less files than wildcard_d.sh gives
 		f = f.split('source/')[1].split('/package.d')[0].split('.d')[0] + '.html'
-		htmls += '_'.join(f.split('/'))
+		htmls += '-Dfweb/' + '_'.join(f.split('/'))
 	endforeach
 
-	# Setup macros + generate dynamic info needed
 	latest_tag = run_command('latest.sh').stdout().strip().split('\n')[0]
-	stddoc = ['../doc/dlang.org/macros.ddoc', 
-			  '../doc/dlang.org/html.ddoc', 
-			  '../doc/dlang.org/dlang.org.ddoc', 
-			  '../.generated/' + latest_tag + '.ddoc', 
-			  '../doc/dlang.org/std.ddoc', 
-			  '../doc/custom.ddoc', 
-			  '../.generated/mir.ddoc']
-
 	sources = ['index.d'] + mir_algorithm_src 		# warning : mir_algorithm_src provides less files than wildcard_d.sh gives
-
-	extra_args_full = [dmd, '-w', '-c', '-o-', '-version=StdDdoc', '-version=Have_mir'] + stddoc + ['-I../source', '-I../subprojects/mir-core/source', '-Df' + web_dir + '/' + '@OUTPUT@', '@INPUT@']
 
 	i = 0
 	foreach f : sources
-		custom_target('target_doc_' + '@0@'.format(i),
-				input : files(f),
-				output : htmls[i],
-				command: extra_args_full)
+		run_command('dmd', files(f), 
+			'-w', '-c', '-o-', '-version=StdDdoc', '-version=Have_mir',
+			'doc/dlang.org/macros.ddoc', 
+			'doc/dlang.org/html.ddoc', 
+			'doc/dlang.org/dlang.org.ddoc', 
+			'.generated/' + latest_tag + '.ddoc', 
+			'doc/dlang.org/std.ddoc', 
+			'doc/custom.ddoc', 
+			'.generated/mir.ddoc',
+			'-Isource', '-Isubprojects/mir-core/source',
+			htmls[i])
 		i += 1
 	endforeach
 
