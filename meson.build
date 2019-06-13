@@ -135,36 +135,6 @@ if get_option('with_doc')
 	endforeach
 
 	# Setup all other resources needed by dlang.org
-	infiles = ['doc/artwork/logo/mir_site_logo.svg', # images
-			   'doc/dlang.org/favicon.ico',
-			   'doc/dlang.org/css/style.css', # styles
-			   'doc/dlang.org/css/print.css', 
-			   'doc/custom.css', 
-			   'doc/dlang.org/css/codemirror.css',
-			   'doc/dlang.org/js/codemirror-compressed.js',   # js
-			   'doc/dlang.org/js/dlang.js', 
-			   'doc/dlang.org/js/ddox.js', 
-			   'doc/dlang.org/js/listanchors.js', 
-			   'doc/dlang.org/js/run.js', 
-			   'doc/run_examples_custom.js', 
-			   'doc/dlang.org/js/jquery-1.7.2.min.js']
-	outfiles = ['web/images/mir.svg', 
-				'web/favicon.ico', 
-				'web/css/style.css', 
-				'web/css/print.css', 
-				'web/css/custom.css', 
-				'web/css/codemirror.css',
-				'web/js/codemirror-compressed.js', 
-				'web/js/dlang.js', 
-				'web/js/ddox.js', 
-				'web/js/listanchors.js', 
-				'web/js/run.js', 
-				'web/js/run_examples.js', 
-				'web/js/jquery-1.7.2.min.js']
-	run_command('mkdir', 'web', 'web/images', 'web/css', 'web/js')
-	i = 0
-	foreach inf : infiles
-		run_command('cp', inf, outfiles[i])
-		i += 1
-	endforeach
+	run_command('cp_styles.sh')
+
 endif
