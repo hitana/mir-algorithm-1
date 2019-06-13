@@ -109,7 +109,7 @@ if get_option('with_doc')
 
 	# D file to html, e.g. mir/combinatorics -> mir_combinatorics.html
 	# But "package.d" is special cased: std/range/package.d -> std_range.html
-	htmls = ['web/index.html']
+	htmls = ['-Dfweb/index.html']
 	foreach f : mir_algorithm_src									# warning : mir_algorithm_src provides less files than wildcard_d.sh gives
 		f = f.split('source/')[1].split('/package.d')[0].split('.d')[0] + '.html'
 		htmls += '-Dfweb/' + '_'.join(f.split('/'))
