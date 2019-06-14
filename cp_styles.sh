@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir web web/images web/css web/js
+mkdir -p web web/images web/css web/js
 
 infiles=(doc/artwork/logo/mir_site_logo.svg 
 	doc/dlang.org/favicon.ico 
