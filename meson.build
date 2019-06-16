@@ -118,16 +118,17 @@ if get_option('with_doc')
 	latest_tag = run_command('latest.sh').stdout().strip().split('\n')[0]
 	sources = ['index.d'] + mir_algorithm_src 		# warning : mir_algorithm_src provides less files than wildcard_d.sh gives
 
-	extra_args = ['dmd', '-w', '-c', '-o-', '-version=StdDdoc', '-version=Have_mir', 
-                        '../doc/dlang.org/macros.ddoc', 
-			'../doc/dlang.org/html.ddoc', 
-			'../doc/dlang.org/dlang.org.ddoc', 
-			'../.generated/' + latest_tag + '.ddoc', 
-			'../doc/dlang.org/std.ddoc', 
-			'../doc/custom.ddoc', 
-			'../.generated/mir.ddoc',
-			'-I../source', '-I../subprojects/mir-core/source', 
-			'-Df../web/' + '@OUTPUT@', '@INPUT@']
+	root = meson.source_root()
+	extra_args = ['dmd', '-w', '-c', '-o-', '-version=StdDdoc', '-version=Have_mir',
+			root + '/doc/dlang.org/macros.ddoc',
+			root + '/doc/dlang.org/html.ddoc',
+			root + '/doc/dlang.org/dlang.org.ddoc',
+			root + '/.generated/' + latest_tag + '.ddoc',
+			root + '/doc/dlang.org/std.ddoc',
+			root + '/doc/custom.ddoc',
+			root + '/.generated/mir.ddoc',
+			'-I' + root + '/source', '-I' + root + '/subprojects/mir-core/source',
+			'-Df' + root + '/web/' + '@OUTPUT@', '@INPUT@']
 
 	i = 0
 	foreach f : sources
