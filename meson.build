@@ -107,6 +107,8 @@ endif
 
 if get_option('with_doc')
 
+	mir_algorithm_subprojects = ['mir-core']
+
 	# D file to html, e.g. mir/combinatorics -> mir_combinatorics.html
 	# But "package.d" is special cased: std/range/package.d -> std_range.html
 	htmls = ['index.html']
@@ -121,15 +123,21 @@ if get_option('with_doc')
 
 	latest_tag = run_command('latest.sh').stdout().strip().split('\n')[0]
 	sources = ['index.d'] + mir_algorithm_src 		# warning : mir_algorithm_src provides less files than wildcard_d.sh gives
+
+	includes = ['-I' + join_paths(root, 'source')]
+	foreach sub_name : mir_algorithm_subprojects
+		includes += '-I' + join_paths(root, 'subprojects', sub_name, 'source')
+	endforeach
+
 	extra_args = [d_compiler.get_id(), '-w', '-c', '-o-', '-version=StdDdoc', '-version=Have_mir',
-			root + '/doc/dlang.org/macros.ddoc',
-			root + '/doc/dlang.org/html.ddoc',
-			root + '/doc/dlang.org/dlang.org.ddoc',
-			root + '/.generated/' + latest_tag + '.ddoc',
-			root + '/doc/dlang.org/std.ddoc',
-			root + '/doc/custom.ddoc',
-			root + '/.generated/mir.ddoc',
-			'-I' + root + '/source', '-I' + root + '/subprojects/mir-core/source',
+			join_paths(root, 'doc', 'dlang.org', 'macros.ddoc'),
+			join_paths(root, 'doc', 'dlang.org', 'html.ddoc'),
+			join_paths(root, 'doc', 'dlang.org', 'dlang.org.ddoc'),
+			join_paths(root, '.generated', latest_tag + '.ddoc'),
+			join_paths(root, 'doc', 'dlang.org', 'std.ddoc'),
+			join_paths(root, 'doc', 'custom.ddoc'),
+			join_paths(root, '.generated', 'mir.ddoc'),
+			includes,
 			'-Df' + root + '/web/' + '@OUTPUT@', '@INPUT@']
 
 	i = 0
