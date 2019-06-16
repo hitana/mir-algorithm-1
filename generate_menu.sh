@@ -1,9 +1,14 @@
 #!/bin/bash
 
 root="$1"
+compiler="$2"
 if [ -z "$1" ]; then
     $root=.
 fi
+if [ -z "$2" ]; then
+    $compiler=dmd
+fi
+
 
 mkdir -p $root'/.generated'
 
@@ -17,4 +22,4 @@ echo 'LATEST='$latest_tag > $ddoc_latest
 echo 'LATEST_STABLE='$latest_stable_tag >> $ddoc_latest
 
 
-rdmd --compiler=dmd $root/doc/gen_modlist.d $root/source > $root/.generated/mir.ddoc
+rdmd --compiler=$compiler $root/doc/gen_modlist.d $root/source > $root/.generated/mir.ddoc
