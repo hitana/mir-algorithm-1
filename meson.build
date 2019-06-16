@@ -115,10 +115,11 @@ if get_option('with_doc')
 		htmls += '_'.join(f.split('/'))
 	endforeach
 
+	root = meson.source_root()
+	run_command('generate_menu.sh', root)
+
 	latest_tag = run_command('latest.sh').stdout().strip().split('\n')[0]
 	sources = ['index.d'] + mir_algorithm_src 		# warning : mir_algorithm_src provides less files than wildcard_d.sh gives
-
-	root = meson.source_root()
 	extra_args = ['dmd', '-w', '-c', '-o-', '-version=StdDdoc', '-version=Have_mir',
 			root + '/doc/dlang.org/macros.ddoc',
 			root + '/doc/dlang.org/html.ddoc',
