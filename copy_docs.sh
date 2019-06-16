@@ -4,10 +4,10 @@ from="$1"
 to="$2"
 
 if [ -z "$1" ]; then
-    $from='build'
+    from="build"
 fi
 if [ -z "$2" ]; then
-    $to='web'
+    to="web"
 fi
 
 mkdir -p $to $to'/images' $to'/css' $to'/js'
