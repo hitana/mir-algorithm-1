@@ -3,10 +3,10 @@
 root="$1"
 compiler="$2"
 if [ -z "$1" ]; then
-    $root=.
+    root=.
 fi
 if [ -z "$2" ]; then
-    $compiler=dmd
+    compiler="dmd"
 fi
 
 
@@ -21,5 +21,4 @@ ddoc_mir=$root'/.generated/mir.ddoc'
 echo 'LATEST='$latest_tag > $ddoc_latest
 echo 'LATEST_STABLE='$latest_stable_tag >> $ddoc_latest
 
-
-rdmd --compiler=$compiler $root/doc/gen_modlist.d $root/source > $root/.generated/mir.ddoc
+$compiler -run $root/doc/gen_modlist.d $root/source > $root/.generated/mir.ddoc
