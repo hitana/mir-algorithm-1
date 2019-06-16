@@ -138,7 +138,7 @@ if get_option('with_doc')
 			join_paths(root, 'doc', 'custom.ddoc'),
 			join_paths(root, '.generated', 'mir.ddoc'),
 			includes,
-			'-Df' + root + '/web/' + '@OUTPUT@', '@INPUT@']
+			'-Df' + '@OUTPUT@', '@INPUT@']
 
 	i = 0
 	foreach f : sources
@@ -149,8 +149,4 @@ if get_option('with_doc')
 				command: extra_args)
 		i += 1
 	endforeach
-
-	# Setup all other resources needed by dlang.org
-	run_command('cp_styles.sh')
-
 endif
