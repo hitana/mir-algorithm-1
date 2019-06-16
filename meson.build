@@ -112,31 +112,44 @@ if get_option('with_doc')
 	# D file to html, e.g. mir/combinatorics -> mir_combinatorics.html
 	# But "package.d" is special cased: std/range/package.d -> std_range.html
 	htmls = ['index.html']
-	foreach f : mir_algorithm_src									# warning : mir_algorithm_src provides less files than wildcard_d.sh gives
+	foreach f : mir_algorithm_src
 		f = f.split('source/')[1].split('/package.d')[0].split('.d')[0] + '.html'
 		htmls += '_'.join(f.split('/'))
 	endforeach
 
 	root = meson.source_root()
 	d_compiler = meson.get_compiler('d')
-	run_command('generate_menu.sh', root, d_compiler.get_id())
 
-	latest_tag = run_command('latest.sh').stdout().strip().split('\n')[0]
-	sources = ['index.d'] + mir_algorithm_src 		# warning : mir_algorithm_src provides less files than wildcard_d.sh gives
+	menu = custom_target('menu_target',
+				build_by_default: true,
+				input : files(join_paths(root, 'doc', 'gen_modlist.d')),
+				output : 'mir.ddoc',
+				capture: true,
+				command: [d_compiler.get_id(), '-run', '@INPUT@', join_paths(root, 'source')])
+
+	latest_tag = run_command('git', 'describe', '--abbrev=0', '--tags').stdout().strip().split('\n')[0].split('v')[1]
+	latest_file = custom_target('latest_target',
+				build_by_default: true,
+				input : [],
+				output : latest_tag + '.ddoc',
+				capture: true,
+				command: [find_program('echo'), 'LATEST=', latest_tag, '\n', 'LATEST_STABLE=', latest_tag])
 
 	includes = ['-I' + join_paths(root, 'source')]
 	foreach sub_name : mir_algorithm_subprojects
 		includes += '-I' + join_paths(root, 'subprojects', sub_name, 'source')
 	endforeach
 
+	sources = ['index.d'] + mir_algorithm_src
+
 	extra_args = [d_compiler.get_id(), '-w', '-c', '-o-', '-version=StdDdoc', '-version=Have_mir',
 			join_paths(root, 'doc', 'dlang.org', 'macros.ddoc'),
 			join_paths(root, 'doc', 'dlang.org', 'html.ddoc'),
 			join_paths(root, 'doc', 'dlang.org', 'dlang.org.ddoc'),
-			join_paths(root, '.generated', latest_tag + '.ddoc'),
+			latest_tag + '.ddoc',
 			join_paths(root, 'doc', 'dlang.org', 'std.ddoc'),
 			join_paths(root, 'doc', 'custom.ddoc'),
-			join_paths(root, '.generated', 'mir.ddoc'),
+			'mir.ddoc',
 			includes,
 			'-Df' + '@OUTPUT@', '@INPUT@']
 
@@ -146,6 +159,7 @@ if get_option('with_doc')
 				build_by_default: true,
 				input : files(f),
 				output : htmls[i],
+				depends: [menu, latest_file],
 				command: extra_args)
 		i += 1
 	endforeach
